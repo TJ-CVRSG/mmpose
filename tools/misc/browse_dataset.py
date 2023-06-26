@@ -17,7 +17,8 @@ from mmpose.structures import PoseDataSample
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Browse a dataset')
-    parser.add_argument('config', help='train config file path')
+    # parser.add_argument('config', help='train config file path')
+    parser.add_argument('--config', default='configs/license_plate_2d_keypoint/rtmpose/tjlp/rtmpose-t_420e_tjlp-160x160.py',help='train config file path')
     parser.add_argument(
         '--output-dir',
         default=None,
@@ -26,7 +27,7 @@ def parse_args():
     parser.add_argument('--not-show', default=False, action='store_true')
     parser.add_argument(
         '--phase',
-        default='train',
+        default='val',
         type=str,
         choices=['train', 'test', 'val'],
         help='phase of dataset to visualize, accept "train" "test" and "val".'
@@ -156,7 +157,7 @@ def main():
             show=not args.not_show,
             wait_time=args.show_interval,
             out_file=out_file)
-
+        
         progress_bar.update()
 
 

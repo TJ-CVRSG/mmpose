@@ -136,6 +136,9 @@ def merge_args(cfg, args):
 
 
 def main():
+    # import torch
+    # torch.multiprocessing.set_sharing_strategy('file_system')
+
     args = parse_args()
 
     # load config
