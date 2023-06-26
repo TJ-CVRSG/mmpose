@@ -34,7 +34,7 @@ def parse_args():
     parser.add_argument("--out-file", default="test.jpg", help="Path to output file")
     parser.add_argument("--device", default="cuda:0", help="Device used for inference")
     parser.add_argument(
-        "--draw-heatmap", action="store_true", help="Visualize the predicted heatmap"
+        "--draw-heatmap", action="store_true", default=False, help="Visualize the predicted heatmap"
     )
     parser.add_argument(
         "--show-kpt-idx",
