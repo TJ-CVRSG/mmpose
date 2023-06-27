@@ -150,7 +150,7 @@ vis_backends = [
     dict(
         type="WandbVisBackend",
         init_kwargs=dict(
-            project="plate_loc_paper", name="mobilenetv2-l1-ccpd", entity="tj_cvrsg"
+            project="plate_loc_paper", name="mobilenetv2-l1-ccpd-160x160", entity="tj_cvrsg"
         ),
     ),
 ]
