@@ -30,7 +30,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # codec settings
-codec = dict(type="RegressionLabel", input_size=(160, 160))
+codec = dict(type="RegressionLabel", input_size=(128, 128))
 
 # model settings
 model = dict(
@@ -63,7 +63,7 @@ model = dict(
 # base dataset settings
 dataset_type = "TJLPDataset"
 data_mode = "topdown"
-data_root = "data/tjlp/"
+data_root = "data/ccpd/"
 
 # pipelines
 train_pipeline = [
@@ -101,7 +101,7 @@ val_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=256,
     num_workers=16,
     persistent_workers=True,
     sampler=dict(type="DefaultSampler", shuffle=True),
@@ -115,7 +115,7 @@ train_dataloader = dict(
     ),
 )
 val_dataloader = dict(
-    batch_size=64,
+    batch_size=256,
     num_workers=16,
     persistent_workers=True,
     drop_last=False,
@@ -124,8 +124,8 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file="test/annotations.json",
-        data_prefix=dict(img="test/images/"),
+        ann_file="val/annotations.json",
+        data_prefix=dict(img="val/images/"),
         test_mode=True,
         pipeline=val_pipeline,
     ),
@@ -150,7 +150,7 @@ vis_backends = [
     dict(
         type="WandbVisBackend",
         init_kwargs=dict(
-            project="plate_loc_paper", name="mobilenetv2-l1-tjlp-160x160", entity="tj_cvrsg"
+            project="plate_loc_paper", name="mobilenetv2-l1-ccpd-128x128", entity="tj_cvrsg"
         ),
     ),
 ]
