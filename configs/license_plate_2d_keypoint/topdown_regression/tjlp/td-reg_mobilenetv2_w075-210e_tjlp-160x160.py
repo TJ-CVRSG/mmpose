@@ -43,7 +43,7 @@ model = dict(
     ),
     backbone=dict(
         type="MobileNetV2",
-        widen_factor=1.0,
+        widen_factor=0.75,
         out_indices=(7,),
     ),
     neck=dict(type="GlobalAveragePooling"),
@@ -150,7 +150,7 @@ vis_backends = [
     dict(
         type="WandbVisBackend",
         init_kwargs=dict(
-            project="plate_loc_paper", name="mobilenetv2_a1-l1-tjlp-160x160", entity="tj_cvrsg"
+            project="plate_loc_paper", name="mobilenetv2_a075-l1-tjlp-160x160", entity="tj_cvrsg"
         ),
     ),
 ]

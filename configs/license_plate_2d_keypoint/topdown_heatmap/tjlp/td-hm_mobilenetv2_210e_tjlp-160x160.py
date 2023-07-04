@@ -7,7 +7,7 @@ train_cfg = dict(max_epochs=210, val_interval=1)
 optim_wrapper = dict(
     optimizer=dict(
         type="Adam",
-        lr=1e-3,
+        lr=5e-4,
     )
 )
 
@@ -15,11 +15,11 @@ optim_wrapper = dict(
 param_scheduler = [
     dict(
         type="LinearLR", begin=0, end=500, start_factor=0.001, by_epoch=False
-    ),  # warm-upd
+    ),  # warm-up
     dict(
         type="MultiStepLR",
         begin=0,
-        end=train_cfg["max_epochs"],
+        end=210,
         milestones=[170, 200],
         gamma=0.1,
         by_epoch=True,
@@ -30,7 +30,7 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # codec settings
-codec = dict(type="RegressionLabel", input_size=(160, 160))
+codec = dict(type="MSRAHeatmap", input_size=(160, 160), heatmap_size=(40, 40), sigma=2)
 
 # model settings
 model = dict(
@@ -46,17 +46,17 @@ model = dict(
         widen_factor=1.0,
         out_indices=(7,),
     ),
-    neck=dict(type="GlobalAveragePooling"),
     head=dict(
-        type="RegressionHead",
+        type="HeatmapHead",
         in_channels=1280,
-        num_joints=4,
-        loss=dict(type="SmoothL1Loss", use_target_weight=True),
+        out_channels=4,
+        loss=dict(type="KeypointMSELoss", use_target_weight=True),
         decoder=codec,
     ),
     test_cfg=dict(
         flip_test=False,
-        shift_coords=True,
+        flip_mode="heatmap",
+        shift_heatmap=True,
     ),
 )
 
@@ -150,7 +150,7 @@ vis_backends = [
     dict(
         type="WandbVisBackend",
         init_kwargs=dict(
-            project="plate_loc_paper", name="mobilenetv2_a1-l1-tjlp-160x160", entity="tj_cvrsg"
+            project="plate_loc_paper", name="hm-mobilenetv2-mse-tjlp", entity="tj_cvrsg"
         ),
     ),
 ]
