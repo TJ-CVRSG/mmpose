@@ -59,7 +59,8 @@ class RLEHead(BaseHead):
             self.decoder = None
 
         # Define fully-connected layers
-        self.fc = nn.Linear(in_channels, self.num_joints * 4)
+        self.fc1 = nn.Linear(in_channels, self.num_joints * 2) # 2 for x, y
+        self.fc2 = nn.Linear(in_channels, self.num_joints * 2) # 2 for sigma_x, sigma_y
 
         # Register the hook to automatically convert old version state dicts
         self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
@@ -77,10 +78,14 @@ class RLEHead(BaseHead):
         x = feats[-1]
 
         x = torch.flatten(x, 1)
-        x = self.fc(x)
+        x1 = self.fc1(x)
+        x1 = x1.reshape(-1, self.num_joints, 2)
 
-        return x.reshape(-1, self.num_joints, 4)
+        x2 = self.fc2(x)
+        x2 = x2.reshape(-1, self.num_joints, 2)
 
+        return x1, x2
+        
     def predict(self,
                 feats: Tuple[Tensor],
                 batch_data_samples: OptSampleList,
@@ -96,6 +101,7 @@ class RLEHead(BaseHead):
             _feats, _feats_flip = feats
 
             _batch_coords = self.forward(_feats)
+            _batch_coords = torch.cat(_batch_coords, dim=-1)
             _batch_coords[..., 2:] = _batch_coords[..., 2:].sigmoid()
 
             _batch_coords_flip = flip_coordinates(
@@ -108,6 +114,7 @@ class RLEHead(BaseHead):
             batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
         else:
             batch_coords = self.forward(feats)  # (B, K, D)
+            batch_coords = torch.cat(batch_coords, dim=-1)
             batch_coords[..., 2:] = batch_coords[..., 2:].sigmoid()
 
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
@@ -122,6 +129,7 @@ class RLEHead(BaseHead):
         """Calculate losses from a batch of inputs and data samples."""
 
         pred_outputs = self.forward(inputs)
+        pred_outputs = torch.cat(pred_outputs, dim=-1)
 
         keypoint_labels = torch.cat(
             [d.gt_instance_labels.keypoint_labels for d in batch_data_samples])
